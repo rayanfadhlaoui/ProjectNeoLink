@@ -1,8 +1,8 @@
-package com.controler.user;
+package com.rayanfadhlaoui.controler.user;
 
 import java.util.Date;
 
-import com.model.entities.User;
+import com.rayanfadhlaoui.model.entities.User;
 
 public class UserUpdater {
 	private User user;

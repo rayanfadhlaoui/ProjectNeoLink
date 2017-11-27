@@ -1,4 +1,4 @@
-package com.controler.utils;
+package com.rayanfadhlaoui.controler.utils;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

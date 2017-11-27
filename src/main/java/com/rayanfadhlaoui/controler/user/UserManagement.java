@@ -1,15 +1,17 @@
-package com.controler.user;
+package com.rayanfadhlaoui.controler.user;
 
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
-import com.controler.utils.StringUtils;
-import com.model.entities.User;
-import com.model.other.State;
-import com.model.other.State.Status;
+import com.rayanfadhlaoui.controler.utils.StringUtils;
+import com.rayanfadhlaoui.model.entities.Account;
+import com.rayanfadhlaoui.model.entities.User;
+import com.rayanfadhlaoui.model.other.State;
+import com.rayanfadhlaoui.model.other.State.Status;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;;
@@ -111,8 +113,7 @@ public class UserManagement {
 		State state = new State();
 		if (users.containsKey(user.getLogin())) {
 			users.remove(user.getLogin());
-		}
-		else {
+		} else {
 			state.setStatus(Status.KO);
 			state.addMessage("User does not exist");
 		}
@@ -121,6 +122,21 @@ public class UserManagement {
 
 	public User findUser(String login) {
 		return users.get(login);
+	}
+
+	public List<Account> getAllAccountsAssociatedToUser(String login) {
+		User user = users.get(login);
+		if (user != null) {
+			return user.getAccounts();
+		}
+		return null;
+	}
+
+	public int getUserWealth(String login) {
+		List<Account> allAccounts = getAllAccountsAssociatedToUser(login);
+		AtomicInteger wealth = new AtomicInteger();
+		allAccounts.forEach((account) -> wealth.addAndGet(account.getBalance()));
+		return wealth.get();
 	}
 
 }

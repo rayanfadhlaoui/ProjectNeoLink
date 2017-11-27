@@ -1,4 +1,4 @@
-package com.model.other;
+package com.rayanfadhlaoui.model.other;
 
 import java.util.ArrayList;
 import java.util.List;

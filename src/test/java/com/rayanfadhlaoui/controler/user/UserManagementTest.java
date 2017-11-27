@@ -1,4 +1,4 @@
-package com.controler.user;
+package com.rayanfadhlaoui.controler.user;
 
 import static org.junit.Assert.*;
 
@@ -8,10 +8,15 @@ import java.util.Date;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.controler.utils.DateUtils;
-import com.model.entities.User;
-import com.model.other.State;
-import com.model.other.State.Status;
+import com.rayanfadhlaoui.controler.account.AccountManagement;
+import com.rayanfadhlaoui.controler.user.Generator;
+import com.rayanfadhlaoui.controler.user.UserManagement;
+import com.rayanfadhlaoui.controler.user.UserUpdater;
+import com.rayanfadhlaoui.controler.utils.DateUtils;
+import com.rayanfadhlaoui.model.entities.Account;
+import com.rayanfadhlaoui.model.entities.User;
+import com.rayanfadhlaoui.model.other.State;
+import com.rayanfadhlaoui.model.other.State.Status;
 
 public class UserManagementTest {
 
@@ -151,7 +156,7 @@ public class UserManagementTest {
 				"Phone number : 0664197893";
 		assertEquals(expectedUserDisplay, user.toString());
 	}
-
+	
 	private User createAndAddUser(String firstName, String lastName, Date birthdate, UserManagement userManagement) {
 		String address = "16 B Avenue Albert 1ER 94210";
 		String phoneNumber = "0664197893";
