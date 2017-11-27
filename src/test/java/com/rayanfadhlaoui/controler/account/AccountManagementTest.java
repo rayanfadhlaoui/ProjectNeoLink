@@ -4,6 +4,7 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 
 import org.junit.Before;
@@ -31,9 +32,8 @@ public class AccountManagementTest {
 
 	@Before
 	public void setUp() {
-		accountManagement.reset();
-		userManagement.reset();
-		resetGenerator();
+		Generator generator = resetGenerator();
+		resetAccountManager(generator);
 	}
 
 	@Test
@@ -211,13 +211,43 @@ public class AccountManagementTest {
 		return user;
 	}
 
-	private void resetGenerator() {
+	private Generator resetGenerator() {
 		Generator generator = Generator.getInstance();
 		Field field;
 		try {
 			field = Generator.class.getDeclaredField("accountNumber");
 			field.setAccessible(true);
 			field.set(generator, 1);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.getStackTrace();
+		}
+		
+		return generator;
+	}
+	
+	private void resetAccountManager(Generator generator) {
+		userManagement.reset();
+		Field field;
+		try {
+			field = AccountManagement.class.getDeclaredField("accounts");
+			field.setAccessible(true);
+			field.set(accountManagement, new HashMap<>());
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.getStackTrace();
+		}
+		
+		try {
+			field = AccountManagement.class.getDeclaredField("userManagement");
+			field.setAccessible(true);
+			field.set(accountManagement, userManagement);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.getStackTrace();
+		}
+		
+		try {
+			field = AccountManagement.class.getDeclaredField("generator");
+			field.setAccessible(true);
+			field.set(accountManagement, generator);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.getStackTrace();
 		}

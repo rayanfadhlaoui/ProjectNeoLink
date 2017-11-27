@@ -22,11 +22,11 @@ public class UserManagement {
 	private static UserManagement INSTANCE;
 
 	private Map<String, User> users;
-	private Generator loginGenerator;
+	private Generator generator;
 
 	private UserManagement() {
 		users = new HashMap<>();
-		loginGenerator = Generator.getInstance();
+		generator = Generator.getInstance();
 	}
 
 	public static UserManagement getInstance() {
@@ -43,7 +43,7 @@ public class UserManagement {
 	public State createUser(String firstName, String lastName, Date birthdate, String address, String phoneNumber) {
 		State state = dataCheck(firstName, lastName, birthdate, address, phoneNumber);
 		if (Status.OK.equals(state.getStatus())) {
-			User user = new User(loginGenerator.generateLogin(), firstName, lastName, birthdate, address, phoneNumber);
+			User user = new User(generator.generateLogin(), firstName, lastName, birthdate, address, phoneNumber);
 			users.put(user.getLogin(), user);
 		}
 

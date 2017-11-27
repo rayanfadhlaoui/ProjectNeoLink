@@ -34,10 +34,6 @@ public class AccountManagement {
 		return INSTANCE;
 	}
 
-	public void reset() {
-		accounts = new HashMap<>();
-	}
-
 	public void createAccount() {
 		String accountNumber = generator.generateAccountNumber();
 		Date creationDate = new Date();

@@ -4,21 +4,22 @@ import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
 import java.util.Date;
+import java.util.HashMap;
 
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.rayanfadhlaoui.controler.account.AccountManagement;
 import com.rayanfadhlaoui.controler.user.Generator;
 import com.rayanfadhlaoui.controler.user.UserManagement;
 import com.rayanfadhlaoui.controler.user.UserUpdater;
 import com.rayanfadhlaoui.controler.utils.DateUtils;
-import com.rayanfadhlaoui.model.entities.Account;
 import com.rayanfadhlaoui.model.entities.User;
 import com.rayanfadhlaoui.model.other.State;
 import com.rayanfadhlaoui.model.other.State.Status;
 
 public class UserManagementTest {
+	
+	private UserManagement userManagement = UserManagement.getInstance();
 
 	@Test
 	public void testUserCreationOK() {
@@ -176,6 +177,25 @@ public class UserManagementTest {
 			field = Generator.class.getDeclaredField("INSTANCE");
 			field.setAccessible(true);
 			field.set(null, loginGeneratorMock);
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.getStackTrace();
+		}
+	}
+	
+	private void resetAccountManager(Generator generator) {
+		Field field;
+		try {
+			field = UserManagement.class.getDeclaredField("users");
+			field.setAccessible(true);
+			field.set(userManagement, new HashMap<>());
+		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
+			e.getStackTrace();
+		}
+		
+		try {
+			field = UserManagement.class.getDeclaredField("generator");
+			field.setAccessible(true);
+			field.set(userManagement, generator);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.getStackTrace();
 		}
