@@ -1,23 +1,24 @@
-package com.rayanfadhlaoui.controler.account;
+package com.rayanfadhlaoui.domain.services.account;
 
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import com.rayanfadhlaoui.controler.account.AccountManagement;
-import com.rayanfadhlaoui.controler.user.Generator;
-import com.rayanfadhlaoui.controler.user.UserManagement;
-import com.rayanfadhlaoui.controler.utils.DateUtils;
-import com.rayanfadhlaoui.model.entities.Account;
-import com.rayanfadhlaoui.model.entities.User;
-import com.rayanfadhlaoui.model.other.State;
-import com.rayanfadhlaoui.model.other.State.Status;
+import com.rayanfadhlaoui.domain.model.entities.Account;
+import com.rayanfadhlaoui.domain.model.entities.User;
+import com.rayanfadhlaoui.domain.model.other.State;
+import com.rayanfadhlaoui.domain.model.other.State.Status;
+import com.rayanfadhlaoui.domain.services.account.AccountManagement;
+import com.rayanfadhlaoui.domain.services.account.InMemoryAccountRepository;
+import com.rayanfadhlaoui.domain.services.user.InMemoryUserRepository;
+import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.utils.Generator;
 
 public class AccountManagementTest {
 
@@ -27,28 +28,31 @@ public class AccountManagementTest {
 	private static final String ACCOUNT_NUMBER_4 = "0000000004";
 	private static final String ACCOUNT_NUMBER_5 = "0000000005";
 	
-	private AccountManagement accountManagement = AccountManagement.getInstance();
-	private UserManagement userManagement = UserManagement.getInstance();
+	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
+	
+	private AccountManagement accountManagement;
+	private UserManagement userManagement;
 
 	@Before
 	public void setUp() {
 		Generator generator = resetGenerator();
-		resetAccountManager(generator);
+		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
+		accountManagement = new AccountManagement(userManagement, generator, new InMemoryAccountRepository());
 	}
 
 	@Test
 	public void testAccountCreationOK() {
-		String date = DateUtils.display(new Date());
+		String date = LocalDate.now().format(MY_PATTERN);
 		accountManagement.createAccount();
 		accountManagement.createAccount();
 		Account account = accountManagement.getAllAccounts().get(0);
 		assertEquals(ACCOUNT_NUMBER_1, account.getAccountNumber());
-		assertEquals(date, DateUtils.display(account.getcreationDate()));
+		assertEquals(date, account.getcreationDate().format(MY_PATTERN));
 		assertEquals(0, account.getBalance().intValue());
 
 		Account account2 = accountManagement.getAllAccounts().get(1);
 		assertEquals(ACCOUNT_NUMBER_2, account2.getAccountNumber());
-		assertEquals(date, DateUtils.display(account2.getcreationDate()));
+		assertEquals(date, account2.getcreationDate().format(MY_PATTERN));
 		assertEquals(0, account2.getBalance().intValue());
 	}
 
@@ -69,7 +73,7 @@ public class AccountManagementTest {
 	public void testFindAndDisplayUser() {
 		accountManagement.createAccount();
 		Account account = accountManagement.findAccount(ACCOUNT_NUMBER_1);
-		String expectedAccountDisplay = "Account number: " + ACCOUNT_NUMBER_1 + "\n" + "Creation date : " + DateUtils.display(new Date()) + "\n" + "Balance : 0";
+		String expectedAccountDisplay = "Account number: " + ACCOUNT_NUMBER_1 + "\n" + "Creation date : " + LocalDate.now().format(MY_PATTERN) + "\n" + "Balance : 0";
 		assertEquals(expectedAccountDisplay, account.toString());
 	}
 
@@ -204,9 +208,8 @@ public class AccountManagementTest {
 		
 	}
 		
-
 	private User createUserRayan() {
-		userManagement.createUser("Rayan", "Fadhlaoui", DateUtils.parse("19/09/1989"), "16 B Avenue Albert 1ER 94210", "0664197893");
+		userManagement.createUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), "16 B Avenue Albert 1ER 94210", "0664197893");
 		User user = userManagement.getAllUsers().get(0);
 		return user;
 	}
@@ -223,33 +226,5 @@ public class AccountManagementTest {
 		}
 		
 		return generator;
-	}
-	
-	private void resetAccountManager(Generator generator) {
-		userManagement.reset();
-		Field field;
-		try {
-			field = AccountManagement.class.getDeclaredField("accounts");
-			field.setAccessible(true);
-			field.set(accountManagement, new HashMap<>());
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.getStackTrace();
-		}
-		
-		try {
-			field = AccountManagement.class.getDeclaredField("userManagement");
-			field.setAccessible(true);
-			field.set(accountManagement, userManagement);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.getStackTrace();
-		}
-		
-		try {
-			field = AccountManagement.class.getDeclaredField("generator");
-			field.setAccessible(true);
-			field.set(accountManagement, generator);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.getStackTrace();
-		}
 	}
 }

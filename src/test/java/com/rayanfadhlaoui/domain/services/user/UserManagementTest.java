@@ -1,33 +1,40 @@
-package com.rayanfadhlaoui.controler.user;
+package com.rayanfadhlaoui.domain.services.user;
 
 import static org.junit.Assert.*;
 
 import java.lang.reflect.Field;
-import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
+import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
-import com.rayanfadhlaoui.controler.user.Generator;
-import com.rayanfadhlaoui.controler.user.UserManagement;
-import com.rayanfadhlaoui.controler.user.UserUpdater;
-import com.rayanfadhlaoui.controler.utils.DateUtils;
-import com.rayanfadhlaoui.model.entities.User;
-import com.rayanfadhlaoui.model.other.State;
-import com.rayanfadhlaoui.model.other.State.Status;
+import com.rayanfadhlaoui.domain.model.entities.User;
+import com.rayanfadhlaoui.domain.model.other.State;
+import com.rayanfadhlaoui.domain.model.other.State.Status;
+import com.rayanfadhlaoui.domain.services.user.InMemoryUserRepository;
+import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.user.UserUpdater;
+import com.rayanfadhlaoui.domain.services.utils.Generator;
 
 public class UserManagementTest {
+
+	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
+	private UserManagement userManagement;
 	
-	private UserManagement userManagement = UserManagement.getInstance();
+	@Before
+	public void setUp() {
+		Generator generator = Generator.getInstance();
+		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
+	}
 
 	@Test
 	public void testUserCreationOK() {
-		UserManagement userManagement = UserManagement.getInstance();
 
 		String firstName = "Rayan";
 		String lastName = "Fadhlaoui";
-		Date birthdate = DateUtils.parse("19/09/1989");
+		LocalDate birthdate = LocalDate.parse("19/09/1989", MY_PATTERN);
 		String address = "16 B Avenue Albert 1ER 94210";
 		String phoneNumber = "0664197893";
 		State state = userManagement.createUser(firstName, lastName, birthdate, address, phoneNumber);
@@ -44,7 +51,6 @@ public class UserManagementTest {
 
 	@Test
 	public void testUserCreationWithErrors() {
-		UserManagement userManagement = UserManagement.getInstance();
 
 		State state = userManagement.createUser(null, null, null, null, null);
 		assertEquals(Status.KO, state.getStatus());
@@ -53,11 +59,10 @@ public class UserManagementTest {
 
 	@Test
 	public void testUserCreationWithIncompletePhoneNumber() {
-		UserManagement userManagement = UserManagement.getInstance();
 
 		String firstName = "Rayan";
 		String lastName = "Fadhlaoui";
-		Date birthdate = DateUtils.parse("19/09/1989");
+		LocalDate birthdate = LocalDate.parse("19/09/1989", MY_PATTERN);
 		String address = "16 B Avenue Albert 1ER 94210";
 		State state9Numbers = userManagement.createUser(firstName, lastName, birthdate, address, "+011150459");
 		State stateSpecialCharac = userManagement.createUser(firstName, lastName, birthdate, address, "0-11150459");
@@ -75,14 +80,13 @@ public class UserManagementTest {
 
 	@Test
 	public void testUserUpdateOK() {
-		UserManagement userManagement = UserManagement.getInstance();
 
-		User user = createAndAddUser("Rayan", "Fadhlaoui", DateUtils.parse("19/09/1989"), userManagement);
+		User user = createAndAddUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), userManagement);
 
 		UserUpdater userUpdater = userManagement.getUserUpdater(user);
 		userUpdater.setFirstName("Jean");
 		userUpdater.setLastName("Dupont");
-		userUpdater.setBirthdate(DateUtils.parse("19/08/1989"));
+		userUpdater.setBirthdate(LocalDate.parse("19/08/1989", MY_PATTERN));
 		userUpdater.setAddress("3 Avenue Albert 94430");
 		userUpdater.setPhoneNumber("0145766419");
 
@@ -93,7 +97,7 @@ public class UserManagementTest {
 		user = userManagement.getAllUsers().get(0);
 		assertEquals("Jean", user.getFirstName());
 		assertEquals("Dupont", user.getLastName());
-		assertEquals(DateUtils.parse("19/08/1989"), user.getBirthdate());
+		assertEquals(LocalDate.parse("19/08/1989", MY_PATTERN), user.getBirthdate());
 		assertEquals("3 Avenue Albert 94430", user.getAddress());
 		assertEquals("0145766419", user.getPhoneNumber());
 
@@ -101,14 +105,13 @@ public class UserManagementTest {
 
 	@Test
 	public void testUserUpdateWithMultipleError() {
-		UserManagement userManagement = UserManagement.getInstance();
 
-		User user = createAndAddUser("Rayan", "Fadhlaoui", DateUtils.parse("19/09/1989"), userManagement);
+		User user = createAndAddUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), userManagement);
 
 		UserUpdater userUpdater = userManagement.getUserUpdater(user);
 		userUpdater.setFirstName("");
 		userUpdater.setLastName("Dupont");
-		userUpdater.setBirthdate(DateUtils.parse("19/08/1989"));
+		userUpdater.setBirthdate(LocalDate.parse("19/08/1989", MY_PATTERN));
 		userUpdater.setAddress("3 Avenue Albert 94430");
 		userUpdater.setPhoneNumber("014766419");
 
@@ -122,9 +125,8 @@ public class UserManagementTest {
 
 	@Test
 	public void testDeleteUser() {
-		UserManagement userManagement = UserManagement.getInstance();
 
-		User rayanUser = createAndAddUser("Rayan", "Fadhlaoui", DateUtils.parse("19/09/1989"), userManagement);
+		User rayanUser = createAndAddUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), userManagement);
 
 		State state = userManagement.deleteUser(rayanUser);
 		assertEquals(Status.OK, state.getStatus());
@@ -138,10 +140,12 @@ public class UserManagementTest {
 	@Test
 	public void testFindAndDisplayUser() {
 		mockLoginGenerator("AB12345678");
+		
+		Generator generator = Generator.getInstance();
+		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
 
-		UserManagement userManagement = UserManagement.getInstance();
 
-		User rayanUser = createAndAddUser("Rayan", "Fadhlaoui", DateUtils.parse("19/09/1989"), userManagement);
+		User rayanUser = createAndAddUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), userManagement);
 		User user = userManagement.findUser(rayanUser.getLogin());
 		
 		assertEquals(rayanUser.getFirstName(), user.getFirstName());
@@ -158,7 +162,7 @@ public class UserManagementTest {
 		assertEquals(expectedUserDisplay, user.toString());
 	}
 	
-	private User createAndAddUser(String firstName, String lastName, Date birthdate, UserManagement userManagement) {
+	private User createAndAddUser(String firstName, String lastName, LocalDate birthdate, UserManagement userManagement) {
 		String address = "16 B Avenue Albert 1ER 94210";
 		String phoneNumber = "0664197893";
 		userManagement.createUser(firstName, lastName, birthdate, address, phoneNumber);
@@ -177,25 +181,6 @@ public class UserManagementTest {
 			field = Generator.class.getDeclaredField("INSTANCE");
 			field.setAccessible(true);
 			field.set(null, loginGeneratorMock);
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.getStackTrace();
-		}
-	}
-	
-	private void resetAccountManager(Generator generator) {
-		Field field;
-		try {
-			field = UserManagement.class.getDeclaredField("users");
-			field.setAccessible(true);
-			field.set(userManagement, new HashMap<>());
-		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
-			e.getStackTrace();
-		}
-		
-		try {
-			field = UserManagement.class.getDeclaredField("generator");
-			field.setAccessible(true);
-			field.set(userManagement, generator);
 		} catch (NoSuchFieldException | SecurityException | IllegalArgumentException | IllegalAccessException e) {
 			e.getStackTrace();
 		}

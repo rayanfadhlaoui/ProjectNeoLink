@@ -1,17 +1,20 @@
-package com.rayanfadhlaoui.model.entities;
+package com.rayanfadhlaoui.domain.model.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
-import com.rayanfadhlaoui.controler.utils.DateUtils;
-import com.rayanfadhlaoui.controler.utils.StringUtils;
+import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 
 public class Account {
+	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
+	
+	
 	private String accountNumber;
-	private Date creationDate;
+	private LocalDate creationDate;
 	private Integer balance;
 	private User user;
 
-	public Account(String accountNumber, Date creationDate) {
+	public Account(String accountNumber,LocalDate creationDate) {
 		this.accountNumber = accountNumber;
 		this.creationDate = creationDate;
 		balance = 0;
@@ -22,7 +25,7 @@ public class Account {
 		return balance;
 	}
 
-	public Date getcreationDate() {
+	public LocalDate getcreationDate() {
 		return creationDate;
 	}
 
@@ -46,7 +49,7 @@ public class Account {
 	@Override
 	public String toString() {
 		return new StringBuilder().append("Account number: ").append(accountNumber).append(StringUtils.LINE_BREAK) 
-				.append("Creation date : ").append(DateUtils.display(creationDate)).append(StringUtils.LINE_BREAK) 
+				.append("Creation date : ").append(creationDate.format(MY_PATTERN)).append(StringUtils.LINE_BREAK) 
 				.append("Balance : ").append(balance).toString();
 	}
 	

@@ -1,14 +1,14 @@
-package com.rayanfadhlaoui.controler.user;
+package com.rayanfadhlaoui.domain.services.user;
 
-import java.util.Date;
+import java.time.LocalDate;
 
-import com.rayanfadhlaoui.model.entities.User;
+import com.rayanfadhlaoui.domain.model.entities.User;
 
 public class UserUpdater {
 	private User user;
 	private String firstName;
 	private String lastName;
-	private Date birthdate;
+	private LocalDate birthdate;
 	private String address;
 	private String phoneNumber;
 	
@@ -24,7 +24,7 @@ public class UserUpdater {
 		this.lastName = lastName;
 	}
 
-	public void setBirthdate(Date birthdate) {
+	public void setBirthdate(LocalDate birthdate) {
 		this.birthdate = birthdate;
 	}
 
@@ -41,7 +41,7 @@ public class UserUpdater {
 		String loggin = user.getLogin();
 		String newFirstName = firstName != null ? firstName : user.getFirstName();
 		String newLastName = lastName != null ? lastName : user.getLastName();
-		Date newBirthdate = birthdate != null ? birthdate : user.getBirthdate();
+		LocalDate newBirthdate = birthdate != null ? birthdate : user.getBirthdate();
 		String newAddress = address != null ? address : user.getAddress();
 		String newPhoneNumber = phoneNumber != null ? phoneNumber : user.getPhoneNumber();
 		

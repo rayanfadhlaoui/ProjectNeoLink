@@ -1,4 +1,4 @@
-package com.rayanfadhlaoui.controler.utils;
+package com.rayanfadhlaoui.domain.services.utils;
 
 public class StringUtils {
 	public static final String SPACE = " ";

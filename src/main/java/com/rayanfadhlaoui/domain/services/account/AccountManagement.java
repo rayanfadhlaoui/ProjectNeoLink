@@ -1,55 +1,45 @@
-package com.rayanfadhlaoui.controler.account;
+package com.rayanfadhlaoui.domain.services.account;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 
-import com.rayanfadhlaoui.controler.user.Generator;
-import com.rayanfadhlaoui.controler.user.UserManagement;
-import com.rayanfadhlaoui.model.entities.Account;
-import com.rayanfadhlaoui.model.entities.User;
-import com.rayanfadhlaoui.model.other.State;
-import com.rayanfadhlaoui.model.other.State.Status;
+import com.rayanfadhlaoui.domain.model.entities.Account;
+import com.rayanfadhlaoui.domain.model.entities.User;
+import com.rayanfadhlaoui.domain.model.other.State;
+import com.rayanfadhlaoui.domain.model.other.State.Status;
+import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.utils.Generator;
 
 public class AccountManagement {
 
-	private static AccountManagement INSTANCE;
 	private UserManagement userManagement;
 
-	private Map<String, Account> accounts;
+	private AccountRepository accountRepository;
+
 	private Generator generator;
 
-	private AccountManagement() {
-		accounts = new HashMap<>();
-		generator = Generator.getInstance();
-		userManagement = UserManagement.getInstance();
-	}
-
-	public static AccountManagement getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new AccountManagement();
-		}
-		return INSTANCE;
+	AccountManagement(UserManagement userManagement, Generator generator, AccountRepository accountRepository) {
+		this.generator = generator;
+		this.userManagement = userManagement;
+		this.accountRepository = accountRepository;
 	}
 
 	public void createAccount() {
 		String accountNumber = generator.generateAccountNumber();
-		Date creationDate = new Date();
+		LocalDate creationDate = LocalDate.now();
 		Account account = new Account(accountNumber, creationDate);
-		accounts.put(accountNumber, account);
+		accountRepository.save(account);
 	}
 
 	public List<Account> getAllAccounts() {
-		return new ArrayList<>(accounts.values());
+		return accountRepository.getAll();
 	}
 
 	public State deleteAccount(String accountNumber) {
 		State state = new State();
-		Account account = accounts.get(accountNumber);
+		Account account = accountRepository.findAccount(accountNumber);
 		if (account != null && !account.hasUser()) {
-			accounts.remove(accountNumber);
+			accountRepository.deleteAccount(account);
 		} else {
 			handleDeleteError(state, account);
 		}
@@ -66,7 +56,7 @@ public class AccountManagement {
 	}
 
 	public Account findAccount(String accountNumber) {
-		return accounts.get(accountNumber);
+		return accountRepository.findAccount(accountNumber);
 	}
 
 	public State wisdrawMoney(String accountNumber, int amount) {
@@ -96,8 +86,8 @@ public class AccountManagement {
 			state.addMessage("Account does not exist");
 			return state;
 		}
-		
-		if(amount < 0) {
+
+		if (amount < 0) {
 			state.setStatus(Status.KO);
 			state.addMessage("Impossible to deposit a negative amount");
 			return state;

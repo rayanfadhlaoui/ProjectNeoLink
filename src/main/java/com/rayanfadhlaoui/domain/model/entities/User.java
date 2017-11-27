@@ -1,24 +1,25 @@
-package com.rayanfadhlaoui.model.entities;
+package com.rayanfadhlaoui.domain.model.entities;
 
-import java.util.Date;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.LinkedList;
 import java.util.List;
 
-import com.rayanfadhlaoui.controler.utils.DateUtils;
-import com.rayanfadhlaoui.controler.utils.StringUtils;
+import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 
 public class User {
+	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
 
 	private final String login;
 	
 	private final String firstName;
 	private final String lastName;
-	private final Date birthdate;
+	private final LocalDate birthdate;
 	private final String address;
 	private final String phoneNumber;
 	private final List<Account> accounts;
 
-	public User(String login, String firstName, String lastName, Date birthdate, String address, String phoneNumber) {
+	public User(String login, String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
 		this.login = login;
 		this.firstName = firstName;
 		this.lastName = lastName;
@@ -40,7 +41,7 @@ public class User {
 		return lastName;
 	}
 
-	public Date getBirthdate() {
+	public LocalDate getBirthdate() {
 		return birthdate;
 	}
 
@@ -72,7 +73,7 @@ public class User {
 		.append("Login: ").append(login).append(StringUtils.LINE_BREAK)
 		.append("First name : ").append(firstName).append(StringUtils.LINE_BREAK)
 		.append("Last name : ").append(lastName).append(StringUtils.LINE_BREAK)
-		.append("Birthdate : ").append(DateUtils.display(birthdate)).append(StringUtils.LINE_BREAK)
+		.append("Birthdate : ").append(birthdate.format(MY_PATTERN)).append(StringUtils.LINE_BREAK)
 		.append("Adrress: ").append(address).append(StringUtils.LINE_BREAK)
 		.append("Phone number : ").append(phoneNumber)
 		.toString();

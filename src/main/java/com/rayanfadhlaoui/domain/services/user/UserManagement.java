@@ -1,17 +1,15 @@
-package com.rayanfadhlaoui.controler.user;
+package com.rayanfadhlaoui.domain.services.user;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
+import java.time.LocalDate;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import com.rayanfadhlaoui.controler.utils.StringUtils;
-import com.rayanfadhlaoui.model.entities.Account;
-import com.rayanfadhlaoui.model.entities.User;
-import com.rayanfadhlaoui.model.other.State;
-import com.rayanfadhlaoui.model.other.State.Status;
+import com.rayanfadhlaoui.domain.model.entities.Account;
+import com.rayanfadhlaoui.domain.model.entities.User;
+import com.rayanfadhlaoui.domain.model.other.State;
+import com.rayanfadhlaoui.domain.model.other.State.Status;
+import com.rayanfadhlaoui.domain.services.utils.Generator;
+import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;;
@@ -19,52 +17,41 @@ import java.util.regex.Pattern;;
 public class UserManagement {
 
 	private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0|\\\\+33|0033)[1-9][0-9]{8}");
-	private static UserManagement INSTANCE;
 
-	private Map<String, User> users;
+	private UserRepository userRepository;
+
 	private Generator generator;
 
-	private UserManagement() {
-		users = new HashMap<>();
-		generator = Generator.getInstance();
+	public UserManagement(UserRepository userRepository, Generator generator) {
+		this.userRepository = userRepository;
+		this.generator = generator;
 	}
 
-	public static UserManagement getInstance() {
-		if (INSTANCE == null) {
-			INSTANCE = new UserManagement();
-		}
-		return INSTANCE;
-	}
-
-	public void reset() {
-		users = new HashMap<>();
-	}
-
-	public State createUser(String firstName, String lastName, Date birthdate, String address, String phoneNumber) {
+	public State createUser(String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
 		State state = dataCheck(firstName, lastName, birthdate, address, phoneNumber);
 		if (Status.OK.equals(state.getStatus())) {
 			User user = new User(generator.generateLogin(), firstName, lastName, birthdate, address, phoneNumber);
-			users.put(user.getLogin(), user);
+			userRepository.saveUser(user);
 		}
 
 		return state;
 	}
 
-	private State dataCheck(String firstName, String lastName, Date birthdate, String address, String phoneNumber) {
+	private State dataCheck(String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
 		State state = checkFieldsPresence(firstName, lastName, birthdate, address, phoneNumber);
 		state = checkDataValidity(phoneNumber, state);
 		return state;
 	}
 
 	public List<User> getAllUsers() {
-		return new ArrayList<>(users.values());
+		return userRepository.findAllUser();
 	}
 
 	public State updateUser(UserUpdater userUpdater) {
 		User user = userUpdater.getUser();
 		State state = dataCheck(user.getFirstName(), user.getLastName(), user.getBirthdate(), user.getAddress(), user.getPhoneNumber());
 		if (Status.OK.equals(state.getStatus())) {
-			users.put(user.getLogin(), user);
+			userRepository.saveUser(user);
 		}
 		return state;
 	}
@@ -82,7 +69,7 @@ public class UserManagement {
 		return state;
 	}
 
-	private State checkFieldsPresence(String firstName, String lastName, Date birthdate, String address, String phoneNumber) {
+	private State checkFieldsPresence(String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
 		State state = new State();
 		StringBuilder sb = new StringBuilder("Missing fields: (");
 		testField(firstName, "First name", sb, state);
@@ -111,8 +98,8 @@ public class UserManagement {
 
 	public State deleteUser(User user) {
 		State state = new State();
-		if (users.containsKey(user.getLogin())) {
-			users.remove(user.getLogin());
+		if (userRepository.findUser(user.getLogin()) != null) {
+			userRepository.deleteUser(user);
 		} else {
 			state.setStatus(Status.KO);
 			state.addMessage("User does not exist");
@@ -121,11 +108,11 @@ public class UserManagement {
 	}
 
 	public User findUser(String login) {
-		return users.get(login);
+		return userRepository.findUser(login);
 	}
 
 	public List<Account> getAllAccountsAssociatedToUser(String login) {
-		User user = users.get(login);
+		User user = userRepository.findUser(login);
 		if (user != null) {
 			return user.getAccounts();
 		}
