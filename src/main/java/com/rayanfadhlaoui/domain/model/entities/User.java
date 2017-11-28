@@ -8,10 +8,9 @@ import java.util.List;
 import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 
 public class User {
-	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
+	private final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
 
 	private final String login;
-	
 	private final String firstName;
 	private final String lastName;
 	private final LocalDate birthdate;
@@ -60,7 +59,6 @@ public class User {
 	public void addAccount(Account account) {
 		accounts.add(account);
 	}
-	
 
 	public void remove(Account account) {
 		accounts.remove(account);

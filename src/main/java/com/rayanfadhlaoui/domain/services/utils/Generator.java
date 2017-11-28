@@ -8,8 +8,8 @@ public class Generator {
 	private final static char[] ALPHABET = { 'A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z' };
 	private static Generator INSTANCE;
 	private Integer accountNumber;
-	List<String> generatedLogin;
-	private Random rand;
+	private final List<String> generatedLogin;
+	private final Random rand;
 
 	public static Generator getInstance() {
 		if (INSTANCE == null) {
@@ -24,6 +24,10 @@ public class Generator {
 		accountNumber = 1;
 	}
 
+	/** Generate a random login.<br/>
+	 *  The login is composed of 2 letters and 8 numbers.<br/>
+	 *  All the logins generated will be unique.
+	 *  @return A unique random login.*/
 	public String generateLogin() {
 		StringBuilder sb = new StringBuilder();
 		for (int i = 0; i < 2; i++) {
@@ -45,6 +49,15 @@ public class Generator {
 
 	}
 
+	/** Generate an account number.<br/>
+	 *  The account number will be incremented each the method is called.
+	 *  @return An unique account number.*/
+	public String generateAccountNumber() {
+		String strigifiedAccountNumber = String.format("%010d", accountNumber);
+		accountNumber++;
+		return strigifiedAccountNumber;
+	}
+
 	private int rand(int min, int max) {
 
 		if (min >= max) {
@@ -54,9 +67,4 @@ public class Generator {
 		return rand.nextInt((max - min) + 1) + min;
 	}
 
-	public String generateAccountNumber() {
-		String strigifiedAccountNumber = String.format("%010d", accountNumber);
-		accountNumber++;
-		return strigifiedAccountNumber;
-	}
 }

@@ -7,9 +7,9 @@ import java.util.Map;
 
 import com.rayanfadhlaoui.domain.model.entities.Account;
 
-public class InMemoryAccountRepository implements AccountRepository{
-	public Map<String, Account> accounts;
-	
+public class InMemoryAccountRepository implements AccountRepository {
+	private Map<String, Account> accounts;
+
 	public InMemoryAccountRepository() {
 		accounts = new HashMap<>();
 	}

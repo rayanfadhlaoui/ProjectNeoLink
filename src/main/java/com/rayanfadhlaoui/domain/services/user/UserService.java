@@ -14,15 +14,15 @@ import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;;
 
-public class UserManagement {
+public class UserService {
 
 	private static final Pattern PHONE_NUMBER_PATTERN = Pattern.compile("(0|\\\\+33|0033)[1-9][0-9]{8}");
 
-	private UserRepository userRepository;
+	private final UserRepository userRepository;
 
-	private Generator generator;
+	private final Generator generator;
 
-	public UserManagement(UserRepository userRepository, Generator generator) {
+	public UserService(UserRepository userRepository, Generator generator) {
 		this.userRepository = userRepository;
 		this.generator = generator;
 	}
@@ -37,12 +37,6 @@ public class UserManagement {
 		return state;
 	}
 
-	private State dataCheck(String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
-		State state = checkFieldsPresence(firstName, lastName, birthdate, address, phoneNumber);
-		state = checkDataValidity(phoneNumber, state);
-		return state;
-	}
-
 	public List<User> getAllUsers() {
 		return userRepository.findAllUser();
 	}
@@ -54,6 +48,40 @@ public class UserManagement {
 			userRepository.saveUser(user);
 		}
 		return state;
+	}
+
+	public UserUpdater getUserUpdater(User user) {
+		return new UserUpdater(user);
+	}
+
+	public State deleteUser(User user) {
+		State state = new State();
+		if (userRepository.findUser(user.getLogin()) != null) {
+			userRepository.deleteUser(user);
+		} else {
+			state.setStatus(Status.KO);
+			state.addMessage("User does not exist");
+		}
+		return state;
+	}
+
+	public User findUser(String login) {
+		return userRepository.findUser(login);
+	}
+
+	public List<Account> getAllAccountsAssociatedToUser(String login) {
+		User user = userRepository.findUser(login);
+		if (user != null) {
+			return user.getAccounts();
+		}
+		return null;
+	}
+
+	public int getUserWealth(String login) {
+		List<Account> allAccounts = getAllAccountsAssociatedToUser(login);
+		AtomicInteger wealth = new AtomicInteger();
+		allAccounts.forEach((account) -> wealth.addAndGet(account.getBalance()));
+		return wealth.get();
 	}
 
 	private State checkDataValidity(String phoneNumber, State state) {
@@ -91,39 +119,11 @@ public class UserManagement {
 			state.setStatus(Status.KO);
 		}
 	}
-
-	public UserUpdater getUserUpdater(User user) {
-		return new UserUpdater(user);
-	}
-
-	public State deleteUser(User user) {
-		State state = new State();
-		if (userRepository.findUser(user.getLogin()) != null) {
-			userRepository.deleteUser(user);
-		} else {
-			state.setStatus(Status.KO);
-			state.addMessage("User does not exist");
-		}
+	
+	private State dataCheck(String firstName, String lastName, LocalDate birthdate, String address, String phoneNumber) {
+		State state = checkFieldsPresence(firstName, lastName, birthdate, address, phoneNumber);
+		state = checkDataValidity(phoneNumber, state);
 		return state;
 	}
-
-	public User findUser(String login) {
-		return userRepository.findUser(login);
-	}
-
-	public List<Account> getAllAccountsAssociatedToUser(String login) {
-		User user = userRepository.findUser(login);
-		if (user != null) {
-			return user.getAccounts();
-		}
-		return null;
-	}
-
-	public int getUserWealth(String login) {
-		List<Account> allAccounts = getAllAccountsAssociatedToUser(login);
-		AtomicInteger wealth = new AtomicInteger();
-		allAccounts.forEach((account) -> wealth.addAndGet(account.getBalance()));
-		return wealth.get();
-	}
-
+	
 }

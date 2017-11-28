@@ -6,7 +6,7 @@ import java.util.List;
 public class State {
 
 	private Status status;
-	private List<String> messages;
+	private final List<String> messages;
 
 	public State() {
 		status = Status.OK;
@@ -17,6 +17,9 @@ public class State {
 		return status;
 	}
 
+	/** Retrieve all the messages.
+	 * @return List of all the error messages.<br/> 
+	 * If the status is 'OK', the list will be empty. */
 	public List<String> getMessages() {
 		return messages;
 	}

@@ -7,18 +7,18 @@ import com.rayanfadhlaoui.domain.model.entities.Account;
 import com.rayanfadhlaoui.domain.model.entities.User;
 import com.rayanfadhlaoui.domain.model.other.State;
 import com.rayanfadhlaoui.domain.model.other.State.Status;
-import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.user.UserService;
 import com.rayanfadhlaoui.domain.services.utils.Generator;
 
-public class AccountManagement {
+public class AccountService {
 
-	private UserManagement userManagement;
+	private UserService userManagement;
 
 	private AccountRepository accountRepository;
 
 	private Generator generator;
 
-	AccountManagement(UserManagement userManagement, Generator generator, AccountRepository accountRepository) {
+	AccountService(UserService userManagement, Generator generator, AccountRepository accountRepository) {
 		this.generator = generator;
 		this.userManagement = userManagement;
 		this.accountRepository = accountRepository;

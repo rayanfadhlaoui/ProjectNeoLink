@@ -4,15 +4,16 @@ import java.time.LocalDate;
 
 import com.rayanfadhlaoui.domain.model.entities.User;
 
-public class UserUpdater {
-	private User user;
+/**The UserUpdater can update an user.*/
+class UserUpdater {
+	private final User user;
 	private String firstName;
 	private String lastName;
 	private LocalDate birthdate;
 	private String address;
 	private String phoneNumber;
 	
-	public UserUpdater(User user) {
+	UserUpdater(User user) {
 		this.user = user;
 	}
 

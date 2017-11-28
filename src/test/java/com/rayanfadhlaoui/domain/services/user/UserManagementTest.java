@@ -14,19 +14,19 @@ import com.rayanfadhlaoui.domain.model.entities.User;
 import com.rayanfadhlaoui.domain.model.other.State;
 import com.rayanfadhlaoui.domain.model.other.State.Status;
 import com.rayanfadhlaoui.domain.services.user.InMemoryUserRepository;
-import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.user.UserService;
 import com.rayanfadhlaoui.domain.services.user.UserUpdater;
 import com.rayanfadhlaoui.domain.services.utils.Generator;
 
 public class UserManagementTest {
 
 	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
-	private UserManagement userManagement;
+	private UserService userManagement;
 	
 	@Before
 	public void setUp() {
 		Generator generator = Generator.getInstance();
-		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
+		userManagement = new UserService(new InMemoryUserRepository(), generator);
 	}
 
 	@Test
@@ -142,7 +142,7 @@ public class UserManagementTest {
 		mockLoginGenerator("AB12345678");
 		
 		Generator generator = Generator.getInstance();
-		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
+		userManagement = new UserService(new InMemoryUserRepository(), generator);
 
 
 		User rayanUser = createAndAddUser("Rayan", "Fadhlaoui", LocalDate.parse("19/09/1989", MY_PATTERN), userManagement);
@@ -162,7 +162,7 @@ public class UserManagementTest {
 		assertEquals(expectedUserDisplay, user.toString());
 	}
 	
-	private User createAndAddUser(String firstName, String lastName, LocalDate birthdate, UserManagement userManagement) {
+	private User createAndAddUser(String firstName, String lastName, LocalDate birthdate, UserService userManagement) {
 		String address = "16 B Avenue Albert 1ER 94210";
 		String phoneNumber = "0664197893";
 		userManagement.createUser(firstName, lastName, birthdate, address, phoneNumber);

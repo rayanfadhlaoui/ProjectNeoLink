@@ -9,7 +9,7 @@ import com.rayanfadhlaoui.domain.model.entities.User;
 
 public class InMemoryUserRepository implements UserRepository {
 
-	final Map<String, User> users;
+	private final Map<String, User> users;
 
 	public InMemoryUserRepository() {
 		users = new HashMap<>();

@@ -14,10 +14,10 @@ import com.rayanfadhlaoui.domain.model.entities.Account;
 import com.rayanfadhlaoui.domain.model.entities.User;
 import com.rayanfadhlaoui.domain.model.other.State;
 import com.rayanfadhlaoui.domain.model.other.State.Status;
-import com.rayanfadhlaoui.domain.services.account.AccountManagement;
+import com.rayanfadhlaoui.domain.services.account.AccountService;
 import com.rayanfadhlaoui.domain.services.account.InMemoryAccountRepository;
 import com.rayanfadhlaoui.domain.services.user.InMemoryUserRepository;
-import com.rayanfadhlaoui.domain.services.user.UserManagement;
+import com.rayanfadhlaoui.domain.services.user.UserService;
 import com.rayanfadhlaoui.domain.services.utils.Generator;
 
 public class AccountManagementTest {
@@ -30,14 +30,14 @@ public class AccountManagementTest {
 	
 	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
 	
-	private AccountManagement accountManagement;
-	private UserManagement userManagement;
+	private AccountService accountManagement;
+	private UserService userManagement;
 
 	@Before
 	public void setUp() {
 		Generator generator = resetGenerator();
-		userManagement = new UserManagement(new InMemoryUserRepository(), generator);
-		accountManagement = new AccountManagement(userManagement, generator, new InMemoryAccountRepository());
+		userManagement = new UserService(new InMemoryUserRepository(), generator);
+		accountManagement = new AccountService(userManagement, generator, new InMemoryAccountRepository());
 	}
 
 	@Test

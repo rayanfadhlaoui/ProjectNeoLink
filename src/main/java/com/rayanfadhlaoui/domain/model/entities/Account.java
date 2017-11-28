@@ -6,11 +6,10 @@ import java.time.format.DateTimeFormatter;
 import com.rayanfadhlaoui.domain.services.utils.StringUtils;
 
 public class Account {
-	final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");	
+	private final DateTimeFormatter MY_PATTERN = DateTimeFormatter.ofPattern("dd/MM/yyyy");
 	
-	
-	private String accountNumber;
-	private LocalDate creationDate;
+	private final String accountNumber;
+	private final LocalDate creationDate;
 	private Integer balance;
 	private User user;
 
@@ -44,7 +43,6 @@ public class Account {
 	public boolean hasUser() {
 		return user != null;
 	}
-
 
 	@Override
 	public String toString() {
