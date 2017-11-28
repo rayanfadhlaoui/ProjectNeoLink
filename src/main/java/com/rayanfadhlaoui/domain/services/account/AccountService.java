@@ -24,6 +24,7 @@ public class AccountService {
 		this.accountRepository = accountRepository;
 	}
 
+	/** Create a account with a default account number and the current date. */
 	public void createAccount() {
 		String accountNumber = generator.generateAccountNumber();
 		LocalDate creationDate = LocalDate.now();
@@ -31,10 +32,22 @@ public class AccountService {
 		accountRepository.save(account);
 	}
 
+	/**
+	 * Retrieve all the accounts.
+	 * 
+	 * @return All the accounts
+	 */
 	public List<Account> getAllAccounts() {
 		return accountRepository.getAll();
 	}
 
+	/**
+	 * Delete an account.
+	 * 
+	 * @return If the account has properly been deleted, the state will be OK. If
+	 *         the account doesn't exist or is linked to a user, the state will be
+	 *         KO
+	 */
 	public State deleteAccount(String accountNumber) {
 		State state = new State();
 		Account account = accountRepository.findAccount(accountNumber);
@@ -46,19 +59,24 @@ public class AccountService {
 		return state;
 	}
 
-	private void handleDeleteError(State state, Account account) {
-		state.setStatus(Status.KO);
-		if (account == null) {
-			state.addMessage("Account does not exist");
-		} else {
-			state.addMessage("Impossible to delete accounts link to a user");
-		}
-	}
-
+	/**
+	 * Return an account from the account number
+	 * 
+	 * @return The account number, if it exist, null otherwise
+	 */
 	public Account findAccount(String accountNumber) {
 		return accountRepository.findAccount(accountNumber);
 	}
 
+	/**
+	 * Wisdraw the amout of money from the account.
+	 * 
+	 * @param accountNumber
+	 *            The account number.
+	 * @param amount
+	 *            The amount of money to wisdraw.
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */
 	public State wisdrawMoney(String accountNumber, int amount) {
 		State state = new State();
 		Account account = findAccount(accountNumber);
@@ -78,6 +96,15 @@ public class AccountService {
 		return state;
 	}
 
+	/**
+	 * Deposit the amout of money to the account.
+	 * 
+	 * @param accountNumber
+	 *            The account number.
+	 * @param amount
+	 *            The amount of money to wisdraw.
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */
 	public State depositMoney(String accountNumber, int amount) {
 		State state = new State();
 		Account account = findAccount(accountNumber);
@@ -99,6 +126,15 @@ public class AccountService {
 		return state;
 	}
 
+	/**
+	 * Link an account to a user.
+	 * 
+	 * @param accountNumber
+	 *            The account number.
+	 * @param login
+	 *            The login of the user.
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */	
 	public State linkAccountToUser(String accountNumber, String login) {
 		State state = new State();
 		User user = userManagement.findUser(login);
@@ -113,18 +149,15 @@ public class AccountService {
 		return state;
 	}
 
-	private void handleDataPresence(State state, User user, Account account) {
-		if (user == null) {
-			state.setStatus(Status.KO);
-			state.addMessage("Missing user");
-		}
-
-		if (account == null) {
-			state.setStatus(Status.KO);
-			state.addMessage("Missing account");
-		}
-	}
-
+	/**
+	 * Dissociate an account from a user.
+	 * 
+	 * @param accountNumber
+	 *            The account number.
+	 * @param login
+	 *            The login of the user.
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */	
 	public State dissociateAccountFromUser(String accountNumber, String login) {
 		State state = new State();
 		User user = userManagement.findUser(login);
@@ -137,4 +170,26 @@ public class AccountService {
 
 		return state;
 	}
+
+	private void handleDeleteError(State state, Account account) {
+		state.setStatus(Status.KO);
+		if (account == null) {
+			state.addMessage("Account does not exist");
+		} else {
+			state.addMessage("Impossible to delete accounts link to a user");
+		}
+	}
+
+	private void handleDataPresence(State state, User user, Account account) {
+		if (user == null) {
+			state.setStatus(Status.KO);
+			state.addMessage("Missing user");
+		}
+
+		if (account == null) {
+			state.setStatus(Status.KO);
+			state.addMessage("Missing account");
+		}
+	}
+
 }

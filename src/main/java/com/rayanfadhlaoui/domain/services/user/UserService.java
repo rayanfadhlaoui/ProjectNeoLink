@@ -37,10 +37,23 @@ public class UserService {
 		return state;
 	}
 
+	/**
+	 * Retrieve all the users.
+	 * 
+	 * @return The list of all the users.
+	 */
 	public List<User> getAllUsers() {
 		return userRepository.findAllUser();
 	}
 
+	/**
+	 * Update a user if all its parameters are correctly provided.
+	 * 
+	 * @param userUpdater
+	 *           An Updater.
+	 *
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */
 	public State updateUser(UserUpdater userUpdater) {
 		User user = userUpdater.getUser();
 		State state = dataCheck(user.getFirstName(), user.getLastName(), user.getBirthdate(), user.getAddress(), user.getPhoneNumber());
@@ -50,10 +63,25 @@ public class UserService {
 		return state;
 	}
 
+	/**
+	 * Retrieve an userUpdater, required to update a user.
+	 * 
+	 * @param user
+	 *           A user.
+	 *
+	 * @return The userUpdater.
+	 */
 	public UserUpdater getUserUpdater(User user) {
 		return new UserUpdater(user);
 	}
 
+	 /* Delete the user.
+	 * 
+	 * @param user
+	 *           A user.
+	 *
+	 * @return the state with the status OK if all went well, KO otherwise.
+	 */
 	public State deleteUser(User user) {
 		State state = new State();
 		if (userRepository.findUser(user.getLogin()) != null) {
@@ -65,10 +93,24 @@ public class UserService {
 		return state;
 	}
 
+	/* Find a user 
+	 * 
+	 * @param login
+	 *           the login.
+	 *
+	 * @return The user attatched to the login, null otherwise.
+	 */
 	public User findUser(String login) {
 		return userRepository.findUser(login);
 	}
 
+	/* Retrieve all the accounts linked to a user.
+	 * 
+	 * @param login
+	 *           Login.
+	 *
+	 * @return The list of all the accounts linked to the user.
+	 */
 	public List<Account> getAllAccountsAssociatedToUser(String login) {
 		User user = userRepository.findUser(login);
 		if (user != null) {
@@ -77,6 +119,13 @@ public class UserService {
 		return null;
 	}
 
+	/* Retrieve the total of all the accounts linked to a user.
+	 * 
+	 * @param login
+	 *           The login.
+	 *
+	 * @return The total of all the accounts linked to the user.
+	 */
 	public int getUserWealth(String login) {
 		List<Account> allAccounts = getAllAccountsAssociatedToUser(login);
 		AtomicInteger wealth = new AtomicInteger();
