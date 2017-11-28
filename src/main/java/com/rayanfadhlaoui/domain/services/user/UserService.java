@@ -75,12 +75,12 @@ public class UserService {
 		return new UserUpdater(user);
 	}
 
-	 /* Delete the user.
+	 /** Delete the user.
 	 * 
 	 * @param user
 	 *           A user.
 	 *
-	 * @return the state with the status OK if all went well, KO otherwise.
+	 * @return The state with the status OK if all went well, KO otherwise.
 	 */
 	public State deleteUser(User user) {
 		State state = new State();
@@ -93,7 +93,7 @@ public class UserService {
 		return state;
 	}
 
-	/* Find a user 
+	/** Find a user 
 	 * 
 	 * @param login
 	 *           the login.
@@ -104,7 +104,7 @@ public class UserService {
 		return userRepository.findUser(login);
 	}
 
-	/* Retrieve all the accounts linked to a user.
+	/** Retrieve all the accounts linked to a user.
 	 * 
 	 * @param login
 	 *           Login.
@@ -119,7 +119,7 @@ public class UserService {
 		return null;
 	}
 
-	/* Retrieve the total of all the accounts linked to a user.
+	/** Retrieve the total of all the accounts linked to a user.
 	 * 
 	 * @param login
 	 *           The login.
